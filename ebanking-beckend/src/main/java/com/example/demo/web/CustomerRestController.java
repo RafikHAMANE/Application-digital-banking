@@ -2,12 +2,14 @@ package com.example.demo.web;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dtos.CustomerDto;
@@ -21,12 +23,19 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @AllArgsConstructor
 @Slf4j
+@CrossOrigin("*")
 public class CustomerRestController {
 	private BankAccountService bankAccountService;
 	
 	@GetMapping("/customers")
 	public List<CustomerDto> customers(){
 		return bankAccountService.listeCustomers();
+	}
+	
+	@GetMapping("/customers/search")
+	public List<CustomerDto> searchCustomers(@RequestParam(name="keyword",defaultValue="")String keyword){
+		return bankAccountService.searchCustomers("%"+keyword+"%");//le signe des pourcentage
+		//veut dire quelque soit le carractére avant et quelque soit le carractére aprés.
 	}
 	
 	@GetMapping("/customers/{id}")

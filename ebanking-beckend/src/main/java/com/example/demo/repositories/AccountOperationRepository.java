@@ -13,6 +13,6 @@ import com.example.demo.entities.AccountOperation;
 public interface AccountOperationRepository extends JpaRepository<AccountOperation, Long>{
 	
 	List<AccountOperation> findByBankAccount_Id(String accountId);
-	Page<AccountOperation> findByBankAccount_Id(String accountId,Pageable pageable);
+	Page<AccountOperation> findByBankAccount_IdOrderByOperationDateDesc(String accountId,Pageable pageable);
 
 }

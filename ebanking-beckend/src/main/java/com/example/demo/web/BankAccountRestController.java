@@ -3,6 +3,7 @@ package com.example.demo.web;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,17 +14,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dtos.AccountHistoryDto;
 import com.example.demo.dtos.AccountOperationDto;
 import com.example.demo.dtos.BankAccountDto;
+import com.example.demo.dtos.CreditDto;
 import com.example.demo.dtos.CurrentBankAccountDto;
+import com.example.demo.dtos.DebitDto;
 import com.example.demo.dtos.SavingBankAccountDto;
+import com.example.demo.dtos.TransferRequestDto;
 import com.example.demo.exception.BalanceNotSufficientException;
 import com.example.demo.exception.BankAccountNotFoundException;
 import com.example.demo.exception.CustomerNotFoundException;
 import com.example.demo.service.BankAccountService;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin("*")//Autorise TOUTES les origines à accéder à ton backend.
+//Angular,React,Postman,n’importe quel sit,peuvent appeler ton API.
 
 public class BankAccountRestController {
 	 
@@ -86,38 +93,29 @@ public class BankAccountRestController {
 		
 	}
 	
-	@PostMapping("debit")
-	public ResponseEntity<String> debit(
-			@RequestParam String accountId,
-			@RequestParam double amount,
-			@RequestParam String description) throws BankAccountNotFoundException, BalanceNotSufficientException {
-		bankAccountService.debit(accountId, amount,description);
-		return ResponseEntity.ok("Débit effectué avec succès");
-		//ResponseEntity:contrôle total de la réponse HTTP
-	 
+
+	@PostMapping("/accounts/debit")
+	public DebitDto debit(@RequestBody DebitDto debitDto) throws BankAccountNotFoundException, BalanceNotSufficientException {
+		this.bankAccountService.debit(debitDto.getAccountId(), debitDto.getAmount(), debitDto.getDescription());
+		return debitDto;
+	}
+	
+	@PostMapping("/accounts/credit")
+	public CreditDto credit(@RequestBody CreditDto creditDto) throws BankAccountNotFoundException {
+		this.bankAccountService.credit(creditDto.getAccountId(), creditDto.getAmount(), creditDto.getDescription());
+		return creditDto;
+	}
+	
+	@PostMapping("/accounts/transfer")
+	public void transfer(@RequestBody TransferRequestDto transferDto) throws BankAccountNotFoundException, BalanceNotSufficientException  {
+		this.bankAccountService.transfer(transferDto.getAccountSource(), transferDto.getAccountDestination(), transferDto.getAmount(), transferDto.getDescription());
 		
 	}
 	
-	@PostMapping("credit")
-	public ResponseEntity<String> credit(
-			@RequestParam String accountId,
-			@RequestParam double amount,
-			@RequestParam String description) throws BankAccountNotFoundException {
-		bankAccountService.credit(accountId, amount,description);
-		return ResponseEntity.ok("Crédit effectué avec succès");
 	
-	
-	
-	}
-	
-	@PostMapping("transfer")
-	public ResponseEntity<String> transfer(
-			@RequestParam String accountIdSource,
-			@RequestParam String accountIdDistin,
-			@RequestParam double amount,
-			@RequestParam String description) throws BankAccountNotFoundException, BalanceNotSufficientException {
-		bankAccountService.transfer(accountIdSource, accountIdDistin, amount, description);
-		return ResponseEntity.ok("Transfert effectué avec succès");
+	@GetMapping("/accounts/{customerId}/accounts")
+	public List<BankAccountDto> getBankAccountByCust(@PathVariable Long customerId) throws CustomerNotFoundException{
+		return bankAccountService.bankAccountListByCust(customerId);
 		
 	}
 
