@@ -5,7 +5,7 @@ Digital Banking est une application de gestion bancaire développée avec Spring
 
 Cette application permet de gérer les clients, les comptes bancaires ainsi que les opérations bancaires comme le débit, le crédit et le transfert d’argent.
 
-Fonctionnalités
+Fonctionnalités:
 Gestion des clients
 Ajouter un client
 Modifier les informations d’un client
